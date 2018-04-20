@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="common_header(title)">
+
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width"/>
+
+    <title th:replace="${title}">Recipes</title>
+
+    <link href='https://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'/>
+    <link rel="stylesheet" th:href="@{/assets/css/unsemantic-grid-responsive.css}"/>
+    <link rel="stylesheet" th:href="@{/assets/css/styles.css}"/>
+
+
+</head>
+
+<body>
+
+<div th:fragment="flash" th:if="${flash != null}" class="container" id="flash-message">
+    <i class="right material-icons" data-close="#"><img onclick="closeFlash()" th:src="@{/assets/images/x-icon.png}" alt="close-icon"></i>
+    <div th:classappend="${#strings.toLowerCase(flash.status)}" th:text="${flash.message}" class="flash"></div>
+</div>
+
+<nav th:fragment="nav">
+    <a th:if="${user} != null" th:href="@{|/profile/${user.username}|}" th:text="${user.username}">Username</a>
+    <a th:if="${user} == null" th:href="@{/signup}">Sign up</a>
+    &bull;
+    <a th:if="${user} != null" th:href="@{/logout}">Log out</a>
+    <a th:if="${user} == null" th:href="@{/login}">Log in</a>
+</nav>
+
+<div th:fragment="logo" class="grid-100" th:with="url=${#httpServletRequest.requestURI}">
+    <h1>
+        <a th:href="@{/}">
+            <img th:src="@{/assets/images/chefbot.svg}" height="60px"/>
+            <br/>
+            <span th:text="${#strings.contains(url,'profile')}? |${userProfile}'s Recipes| : |All Recipes|">Recipes</span>
+        </a>
+    </h1>
+</div>
+
+<div th:fragment="recipes(recipes)">
+    <div th:each="recipe, recipeStat : ${recipes}">
+
+        <div class="grid-100 row addHover" th:with="nextIndex=${recipeStat.index} + 1">
+
+            <div th:if="${recipeStat.odd}">
+                <div class="grid-50 col recipe">
+                    <form th:id="|favoriteForm *{recipes[__${recipeStat.index}__].id}|" th:action="@{|/recipes/*{recipes[__${recipeStat.index}__].id}/favorite|}" method="post">
+                        <p class="name-box">
+                            <a th:href="@{/login}">
+                                <img th:if="${user} == null" th:src="@{/assets/images/favorite.svg}" height="12px" alt="favorite-icon" />
+                            </a>
+                            <button th:if="${user} != null" class="button-link" type="submit">
+                                <img th:src="${#lists.contains(user.favorites, recipes[__${recipeStat.index}__])}? @{/assets/images/favorited.svg} : @{/assets/images/favorite.svg}" height="12px" alt="favorite-icon"/>
+                            </button>
+                            <a th:href="@{|/recipes/details/*{recipes[__${recipeStat.index}__].id}|}">
+                                <span th:text="*{recipes[__${recipeStat.index}__].name}">Recipe Name</span>
+                            </a>
+                        </p>
+                    </form>
+
+                    <a th:href="@{|/recipes/details/*{recipes[__${recipeStat.index}__].id}|}">
+                    <img class="rectangle" th:src="@{|/recipes/image/*{recipes[__${recipeStat.index}__].id}.jpg|}" alt="jpg" />
+                    </a>
+
+                    <form th:action="@{|/recipes/*{recipes[__${recipeStat.index}__].id}/delete|}" method="post">
+                        <p>
+                        <div th:if="${user} != null and ${user.username} == *{recipes[__${recipeStat.index}__].creator.username}">
+                            <a th:href="@{|/recipes/*{recipes[__${recipeStat.index}__].id}/edit|}">
+                                <img th:src="@{/assets/images/edit.svg}" height="12px"/> Edit
+                            </a>
+                            <button class="button-link" type="submit">
+                                <img th:src="@{/assets/images/delete.svg}" height="12px"/> Delete
+                            </button>
+                        </div>
+                        </p>
+                    </form>
+
+
+                </div>
+
+                <div th:if="${#lists.size(recipes)} > ${nextIndex}">
+                    <div class="grid-50 col recipe">
+                        <form th:id="|favoriteForm *{recipes[__${nextIndex}__].id}|" th:action="@{|/recipes/*{recipes[__${nextIndex}__].id}/favorite|}" method="post">
+                            <p class="name-box">
+                                <a th:href="@{/login}">
+                                    <img th:if="${user} == null" th:src="@{/assets/images/favorite.svg}" height="12px" alt="favorite-icon" />
+                                </a>
+                                <button th:if="${user} != null" class="button-link" type="submit">
+                                    <img th:src="${#lists.contains(user.favorites, recipes[__${nextIndex}__])}? @{/assets/images/favorited.svg} : @{/assets/images/favorite.svg}" height="12px" alt="favorite-icon"/>
+                                </button>
+                                <a th:href="@{|/recipes/details/*{recipes[__${nextIndex}__].id}|}">
+                                    <span  th:text="*{recipes[__${nextIndex}__].name}">Recipe Name</span>
+                                </a>
+                            </p>
+                        </form>
+
+                        <a th:href="@{|/recipes/details/*{recipes[__${nextIndex}__].id}|}">
+                        <img class="rectangle" th:src="@{|/recipes/image/*{recipes[__${nextIndex}__].id}.jpg|}" alt="jpg" />
+                        </a>
+
+                        <div th:if="${user} != null and ${user.username} == *{recipes[__${nextIndex}__].creator.username}" >
+                            <form th:action="@{|/recipes/*{recipes[__${nextIndex}__].id}/delete|}" method="post">
+                                <p>
+                                    <a th:href="@{|/recipes/*{recipes[__${nextIndex}__].id}/edit|}">
+                                        <img th:src="@{/assets/images/edit.svg}" height="12px"/> Edit
+                                    </a>
+                                    <button class="button-link" type="submit">
+                                        <img th:src="@{/assets/images/delete.svg}" height="12px"/> Delete
+                                    </button>
+                                </p>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div> <!-- end row -->
+    </div> <!-- end each loop -->
+</div>
+
+<div th:fragment="scripts">
+    <script type="text/javascript" th:src="@{/assets/scripts/jquery-3.3.1.min.js}"></script>
+    <script type="text/javascript" th:src="@{/assets/scripts/app.js}"></script>
+</div>
+</body>
+</html>

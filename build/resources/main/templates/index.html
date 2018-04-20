@@ -1,0 +1,67 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: common_header(~{::title})">
+
+  <title>Recipes</title>
+
+</head>
+
+<body>
+
+  <nav th:replace="layout :: nav"></nav>
+
+  <div th:replace="layout :: flash"></div>
+
+  <div class="grid-container">
+
+  <div th:replace="layout :: logo"></div>
+
+  <div class="grid-100">
+    <div class="flush-right add-recipe">
+      <a th:if="${user} != null" class="button-link" th:href="@{/recipes/add}"><button>+ Add Recipe</button></a>
+    </div>
+  </div>
+
+    <div class="grid-100">
+
+      <div class="recipes">
+
+        <div class="grid-100 row controls">
+
+          <form id="categoryForm" action="/recipes">
+            <div class="grid-30">
+                <input id="categoryInput" type="hidden" name="category" value="">
+                <select id="category">
+                  <option th:value="${categoryGiven}" th:text="${categoryGiven.category}">All Categories</option>
+                  <div th:each="category : ${categories}">
+                    <div th:if="${not #strings.equalsIgnoreCase(category, categoryGiven)} and ${not #strings.equalsIgnoreCase(category, 'ALLCATEGORIES')}">
+                      <option th:value="${category}" th:text="${category.category}">Category</option>
+                    </div>
+                  </div>
+                  <div th:if="${not #strings.equalsIgnoreCase(categoryGiven, 'ALLCATEGORIES')}">
+                    <option th:each="category : ${categories}" th:if="${#strings.equalsIgnoreCase(category, 'ALLCATEGORIES')}" th:value="${category}" th:text="${category.category}"></option>
+                  </div>
+                </select>
+            </div>
+            <div class="grid-30">
+              <input name="searchTerm" th:placeholder="${#strings.isEmpty(searchTerm)}? 'Search' : ${searchTerm}" />
+            </div>
+            <div class="grid-30">
+              <select name="searchField" id="searchField">
+                <option th:selected="${searchField} == null or ${searchField} == 'description'? 'selected'" value="description">Description</option>
+                <option th:selected="${searchField} == 'ingredients'? 'selected'" value="ingredients">Ingredients</option>
+              </select>
+            </div>
+          </form>
+        </div> <div class="clear"></div>
+
+        <div th:replace="layout :: recipes(${recipes})"></div>
+
+        <div class="clear"></div>
+        <div id="ifNone" class="row" style="text-align:center;">&nbsp;</div>
+      </div> <!-- recipes -->
+    </div> <!-- grid-100 -->
+  </div> <!-- grid-container -->
+  <div th:replace="layout :: scripts"></div>
+</body>
+</html>

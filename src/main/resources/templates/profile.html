@@ -1,0 +1,57 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: common_header(~{::title})">
+
+  <title th:text="${userProfile} + ' | Recipes'"></title>
+
+</head>
+
+<body>
+
+<nav th:replace="layout :: nav"></nav>
+
+<div th:replace="layout :: flash"></div>
+
+<div class="grid-container">
+
+  <div th:replace="layout :: logo"></div>
+
+    <div class="grid-100">
+
+      <div class="recipes">
+
+        <div th:if="${favRecipes} != null">
+
+          <div class="grid-100 row controls">
+            <div class="grid-100">
+              <h2> Favorite Recipes </h2>
+            </div>
+          </div> <div class="clear"></div>
+
+          <div th:if="${#lists.isEmpty(favRecipes)}">
+            <div class="grid-100 row">
+              <p style="text-align: center;">Click the heart icon of <span><a style="color:blue" th:href="@{/}">any recipe</a></span> to add it here!</p>
+            </div>
+            <div class="clear"></div>
+          </div>
+
+            <div th:replace="layout :: recipes(${favRecipes})"></div>
+
+        </div>
+
+        <div class="grid-100 row controls">
+          <div class="grid-100">
+            <h2 th:text="|${userProfile}'s Recipes|"> Profile Name </h2>
+          </div>
+        </div> <div class="clear"></div>
+
+          <div th:replace="layout :: recipes(${recipes})"></div>
+
+          <div class="row">&nbsp;</div>
+
+      </div> <!-- recipes -->
+    </div> <!-- grid-100 -->
+  </div> <!-- grid-container -->
+<div th:replace="layout :: scripts"></div>
+</body>
+</html>
